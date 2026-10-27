@@ -229,6 +229,26 @@ Older single-purpose examples remain for exploration: `msm_profile` (per-stage M
 - The NTT is only the transform; a Groth16 prover also needs coset shifts and pointwise
   products, which are simple kernels on top of this.
 
+## Dependencies, SBOM and build provenance
+
+Every release on the [Releases page](https://github.com/zerotruss/zk-gpu/releases) carries three files:
+
+- `zk-gpu-<version>.crate`, the package that is published on crates.io;
+- `zk-gpu-v<version>.cdx.json`, a Software Bill of Materials (SBOM) in the CycloneDX 1.5 JSON format. It lists
+  every component the crate is built from, with its version, licence, hash and package URL, and how the components
+  depend on each other (for all platforms, including Windows, Linux and WebAssembly; test-only dependencies are left out);
+- `SHA256SUMS`, the checksums of the two files above.
+
+To check a download:
+
+```sh
+sha256sum -c SHA256SUMS
+gh attestation verify zk-gpu-<version>.crate --repo zerotruss/zk-gpu
+```
+
+The second command checks the signed build provenance: it proves that the file was built by this repository's release
+workflow from the tagged commit. The release workflow also prints a summary of the SBOM on its run page.
+
 ## Contributing and security
 
 Issues are welcome. This project is maintained on a best-effort basis; see [CONTRIBUTING.md](CONTRIBUTING.md) and open an issue
