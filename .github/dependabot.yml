@@ -7,6 +7,10 @@ updates:
     cooldown:
       default-days: 7   # do not propose a release in its first week: gives time for a bad release to be yanked
     open-pull-requests-limit: 5
+    groups:
+      arkworks: # these crates must share one version, so they are updated in one pull request
+        patterns:
+          - "ark-*"
   - package-ecosystem: github-actions
     directory: /
     schedule:
