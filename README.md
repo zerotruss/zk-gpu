@@ -1,8 +1,13 @@
 # zk-gpu
 
 Portable GPU **MSM** and **NTT** for BN254, the two operations that dominate Groth16/PLONK
-proving. One Rust codebase and one set of WGSL kernels runs natively (Metal, Vulkan, DX12) and
-in the browser (WebGPU). No CUDA, no vendor extensions.
+proving. One Rust codebase and one set of WGSL kernels targets native GPUs (Metal, Vulkan, DX12)
+and the browser (WebGPU) through `wgpu`. No CUDA, no vendor extensions.
+
+**Tested so far:** an Apple M1 (Metal) and Chrome (WebGPU) on the same machine. The library compiles for
+Linux, Windows and WebAssembly (checked in CI and from a Mac), but it has **not yet been run** on NVIDIA,
+AMD or Intel GPUs, so treat portability as designed, not proven. Reports from other hardware are welcome:
+run `./check.sh full` and open an issue with the output.
 
 - **MSM** in G1 and G2: signed-digit Pippenger, fully on the GPU (sorting, bucket sums, reduction).
   One set of shaders serves both groups.
