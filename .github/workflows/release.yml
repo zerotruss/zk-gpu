@@ -85,6 +85,27 @@ jobs:
           SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)
           export SOURCE_DATE_EPOCH
           cargo cyclonedx --format json --target all --spec-version 1.5 --override-filename zk-gpu.cdx
+      - name: Show the SBOM on the run page
+        run: |
+          python3 - <<'EOF' >> "$GITHUB_STEP_SUMMARY"
+          import collections, json
+          bom = json.load(open("zk-gpu.cdx.json"))
+          parts = bom["components"]
+          edges = sum(len(d.get("dependsOn", [])) for d in bom["dependencies"])
+          licences = collections.Counter()
+          for p in parts:
+              names = [l.get("expression") or l.get("license", {}).get("id") or "unknown" for l in p.get("licenses", [])]
+              licences[", ".join(names) or "none declared"] += 1
+          subject = bom["metadata"]["component"]
+          print("## Software Bill of Materials")
+          print(f"CycloneDX {bom['specVersion']} for **{subject['name']} {subject['version']}**: "
+                f"**{len(parts)} components**, {edges} dependency links, made at {bom['metadata']['timestamp']}.")
+          print()
+          print("| Licence | Components |")
+          print("|---|---|")
+          for name, count in licences.most_common():
+              print(f"| {name} | {count} |")
+          EOF
       - name: Collect the files and write checksums
         env:
           TAG: ${{ github.ref_name }}
@@ -93,6 +114,13 @@ jobs:
           cp target/package/*.crate dist/
           cp zk-gpu.cdx.json "dist/zk-gpu-${TAG}.cdx.json"
           (cd dist && sha256sum -- * > SHA256SUMS && cat SHA256SUMS)
+          {
+            echo
+            echo "## Release files (SHA-256)"
+            echo '```'
+            cat dist/SHA256SUMS
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: release-files
