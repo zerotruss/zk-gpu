@@ -1,0 +1,31 @@
+# cargo-deny policy: known vulnerabilities, allowed licences, banned sources.
+# Run:  cargo deny check
+
+[advisories]
+# Unmaintained crates are reported as errors unless listed here with a reason.
+ignore = [
+  # Unmaintained proc-macro pulled in by wgpu-core and arkworks; no known vulnerability, no replacement
+  # available from our side. Re-check when wgpu or arkworks move off it.
+  { id = "RUSTSEC-2024-0436", reason = "unmaintained proc-macro used by wgpu/arkworks; no vulnerability" },
+]
+
+[licenses]
+allow = [
+  "MIT",
+  "Apache-2.0",
+  "Zlib",
+  "BSD-2-Clause",
+  "CC0-1.0",
+  "ISC",
+  "Unicode-3.0",
+]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = ["https://github.com/rust-lang/crates.io-index"]

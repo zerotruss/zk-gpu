@@ -1,0 +1,10 @@
+# Build output and caches
+/target
+node_modules
+__pycache__
+.DS_Store
+
+# Benchmark data stays local: per-device baselines (./check.sh baseline) and run logs
+/bench/baselines
+/bench/results
+*.log

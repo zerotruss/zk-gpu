@@ -1,0 +1,7 @@
+{
+  "name": "zk-gpu-golden",
+  "private": true,
+  "type": "module",
+  "description": "Generates golden test vectors with ffjavascript, the math library behind snarkjs",
+  "dependencies": { "ffjavascript": "0.3.1" }
+}

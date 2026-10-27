@@ -1,0 +1,60 @@
+# Checks that need no GPU. The GPU tests (./check.sh full, ./check.sh browser) run on a real machine
+# before each release: hosted runners have no GPU.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  checks:
+    name: Format, lint, docs, wasm
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install Rust
+        run: |
+          rustup toolchain install stable --profile minimal --component rustfmt --component clippy --target wasm32-unknown-unknown
+          rustup default stable
+      - name: Format
+        run: cargo fmt --check
+      - name: Lint
+        run: cargo clippy --release --all-targets -- -D warnings
+      - name: Documentation
+        run: cargo doc --no-deps --release
+        env:
+          RUSTDOCFLAGS: -D warnings
+      - name: Comparer unit tests (no GPU)
+        run: cargo test --release --example compare
+      - name: WebAssembly build
+        run: cargo build --release --target wasm32-unknown-unknown --lib
+      - name: Mutation checker is not stale
+        run: python3 tools/mutation_check.py --stale
+
+  msrv:
+    name: Minimum Rust version
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check with the version in Cargo.toml
+        run: |
+          version=$(sed -n 's/^rust-version = "\(.*\)"/\1/p' Cargo.toml)
+          rustup toolchain install "$version" --profile minimal
+          cargo +"$version" check --release --all-targets

@@ -1,0 +1,3 @@
+# The code is written in this width and with compact one-line items where they fit.
+max_width = 120
+use_small_heuristics = "Max"
