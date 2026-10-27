@@ -23,4 +23,7 @@ jobs:
       - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           fail-on-severity: moderate
+          # pollster declares its licence as "Apache-2.0/MIT" (the old slash form for a dual licence, both
+          # permissive); GitHub cannot parse that form and reports it as an unknown licence.
+          allow-dependencies-licenses: pkg:cargo/pollster
           allow-licenses: MIT, Apache-2.0, Zlib, BSD-2-Clause, BSD-3-Clause, CC0-1.0, ISC, Unicode-3.0, Unlicense
