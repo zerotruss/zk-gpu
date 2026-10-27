@@ -13,7 +13,7 @@ exclude = ["tools", "bench", "deny.toml", "rustfmt.toml"]
 
 [dependencies]
 wgpu = "28"
-pollster = "0.4"
+pollster = "1.0"
 bytemuck = "1"
 
 [lib]
