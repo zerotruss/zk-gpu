@@ -182,7 +182,9 @@ impl Gpu {
         #[cfg(not(target_arch = "wasm32"))]
         let _ = self.device.poll(wgpu::PollType::wait_indefinitely());
         rx.await.map_err(|e| format!("GPU buffer map failed: {e}"))?;
-        let out = bytemuck::cast_slice(&staging.slice(..).get_mapped_range()).to_vec();
+        let view = staging.slice(..).get_mapped_range().map_err(|e| format!("GPU buffer range failed: {e}"))?;
+        let out = bytemuck::cast_slice(&view).to_vec();
+        drop(view);
         staging.unmap();
         Ok(out)
     }
